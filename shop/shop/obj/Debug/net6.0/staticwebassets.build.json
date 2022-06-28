@@ -1,0 +1,19 @@
+{
+  "Version": 1,
+  "Hash": "UTMGZgqarIR/N8V1sihoRb3Q9iD8VzZCGi9mnQl1Pck=",
+  "Source": "shop",
+  "BasePath": "_content/shop",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "shop\\wwwroot",
+      "Source": "shop",
+      "ContentRoot": "d:\\Csharpik\\online_shop\\shop\\shop\\wwwroot\\",
+      "BasePath": "_content/shop",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": []
+}

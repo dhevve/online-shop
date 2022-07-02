@@ -33,30 +33,16 @@ namespace shop.Controllers
             if (ModelState.IsValid)
             {
 
-                User? candidate = db.Users.FirstOrDefault(x => x.Email == request.Email);
+                User? candidate = GetData(request);
 
                 if (candidate != null)
                 {
                     return BadRequest("user with email already exist");
                 }
 
-                passwordHashService.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                var user = NewUser(request);
 
-                User? user = new User();
-                Basket basket = new Basket();
-
-                basket.User = user;
-
-                user.Email = request.Email;
-                user.PasswordHash = passwordHash;
-                user.PasswordSalt = passwordSalt;
-                user.Role = request.Role;
-                user.Basket = basket;
-
-                db.Users.Add(user);
-                db.Baskets.Add(basket);
-                await db.SaveChangesAsync();
-                return Ok(user);
+                return Ok("user created");
             }
             else
             {
@@ -69,7 +55,7 @@ namespace shop.Controllers
         {
             if (ModelState.IsValid)
             {
-                User? user = await db.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+                User? user = GetData(request);
 
                 if (user == null) return BadRequest("User not found.");
 
@@ -111,6 +97,34 @@ namespace shop.Controllers
             };
 
             return Ok(response);
+        }
+
+        public User GetData(UserDto request)
+        {
+            User? user = db.Users.FirstOrDefault(x => x.Email == request.Email);
+            return user;
+        }
+
+        public async Task<User> NewUser(UserDto request)
+        {
+            passwordHashService.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            User? user = new User();
+            Basket basket = new Basket();
+
+            basket.User = user;
+
+            user.Email = request.Email;
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            user.Role = request.Role;
+            user.Basket = basket;
+
+            db.Users.Add(user);
+            db.Baskets.Add(basket);
+            await db.SaveChangesAsync();
+
+            return user;
         }
     }
 }

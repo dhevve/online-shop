@@ -24,17 +24,13 @@ namespace shop
         [HttpPost("additem")]
         public async Task<ActionResult<Item>> AddItem(Item itemData)
         {
-            if (User.Identity == null) return NotFound("jwt");
-
-            User? user = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
-
-            if (user == null) return NotFound("User not found");
-
-            Basket? basket = db.Baskets.FirstOrDefault(x => x.Id == user.Id);
+            Basket? basket = GetBasket();
 
             if (basket == null) return NotFound("Basket not found");
 
             ItemShop? shop = db.ItemsShop.FirstOrDefault(x => x.Name == itemData.Name);
+
+            if (shop == null) return BadRequest();
 
             Item? item = new Item();
 
@@ -51,15 +47,7 @@ namespace shop
         [HttpDelete("deleteitem/{id:int}")]
         public async Task<ActionResult> DeleteItem(int id)
         {
-            if (User.Identity == null) return NotFound("jwt");
-
-            User? user = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
-
-            if (user == null) return NotFound("User not found");
-
-            Basket? basket = db.Baskets.FirstOrDefault(x => x.Id == user.Id);
-
-            if (basket == null) return NotFound("Basket not found");
+            Basket? basket = GetBasket();
 
             Item? item = db.Items.FirstOrDefault(x => x.Id == id && basket.Id == x.BasketId);
 
@@ -73,13 +61,7 @@ namespace shop
         [HttpGet("getitem/{id:int}")]
         public ActionResult GetItem(int id)
         {
-            if (User.Identity == null) return NotFound("jwt");
-
-            User? user = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
-
-            if (user == null) return NotFound("User not found");
-
-            Basket? basket = db.Baskets.FirstOrDefault(x => x.Id == user.Id);
+            Basket? basket = GetBasket();
 
             if (basket == null) return NotFound("Basket not found");
 
@@ -90,13 +72,7 @@ namespace shop
         [HttpGet("getitems")]
         public async Task<ActionResult<Item[]>> GetItems()
         {
-            if (User.Identity == null) return NotFound("jwt");
-
-            User? user = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
-
-            if (user == null) return NotFound("User not found");
-
-            Basket? basket = db.Baskets.FirstOrDefault(x => x.Id == user.Id);
+            Basket? basket = GetBasket();
 
             if (basket == null) return NotFound("Basket not found");
 
@@ -108,13 +84,7 @@ namespace shop
         [HttpPut("updateitem")]
         public async Task<ActionResult> UpdateItem(Item itemData)
         {
-            if (User.Identity == null) return NotFound("jwt");
-
-            User? user = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
-
-            if (user == null) return NotFound("User not found");
-
-            Basket? basket = db.Baskets.FirstOrDefault(x => x.Id == user.Id);
+            Basket? basket = GetBasket();
 
             if (basket == null) return NotFound("Basket not found");
 
@@ -155,11 +125,25 @@ namespace shop
             var shop = db.ItemsShop.OrderByDescending(x => x.Price).ToList();
             return Ok(shop);
         }
-        [HttpGet("sortshopa")]
-        public async Task<ActionResult<ItemShop[]>> SortShopa()
+        [HttpGet("sortshopbyalphabet")]
+        public async Task<ActionResult<ItemShop[]>> SortShopByAplphabet()
         {
             var shop = db.ItemsShop.OrderBy(x => x.Name).ToList();
             return Ok(shop);
+        }
+
+        public Basket GetBasket()
+        {
+            // if (User.Identity == null) return NotFound("jwt");
+
+            User? user = db.Users.FirstOrDefault(x => x.Email == User.Identity.Name);
+
+            // if (user == null) return NotFound("User not found");
+
+            Basket? basket = db.Baskets.FirstOrDefault(x => x.Id == user.Id);
+
+            // if (basket == null) return NotFound("Basket not found");
+            return basket;
         }
     }
 }
